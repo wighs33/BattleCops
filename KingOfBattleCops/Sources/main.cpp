@@ -31,23 +31,26 @@ Light light;
 Sphere sphere;
 Cube cube;
 
+enum {
+    SKY,
+    GRASS,
+    WALL,
+    WOOD
+};
+
 class Texture {
 public:
-    Texture() : skydata(stbi_load("Resources/sky.jpg", &tex_w, &tex_h, &numberOfChannel, 3)) {
-        data[0] = stbi_load("Resources/tex0.png", &tex_w, &tex_h, &numberOfChannel, 3);
-        data[1] = stbi_load("Resources/tex1.png", &tex_w, &tex_h, &numberOfChannel, 3);
-        data[2] = stbi_load("Resources/tex2.png", &tex_w, &tex_h, &numberOfChannel, 3);
-        data[3] = stbi_load("Resources/tex3.png", &tex_w, &tex_h, &numberOfChannel, 3);
-        data[4] = stbi_load("Resources/tex4.png", &tex_w, &tex_h, &numberOfChannel, 3);
-        data[5] = stbi_load("Resources/tex5.png", &tex_w, &tex_h, &numberOfChannel, 3);
+    Texture(){
+        images[0] = stbi_load("Resources/sky.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
+        images[1] = stbi_load("Resources/grass.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        images[2] = stbi_load("Resources/wall.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
+        images[3] = stbi_load("Resources/wood.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
     }
 
     ~Texture() {
-        stbi_image_free(skydata);
-
-        for (size_t i = 0; i < 6; i++)
+        for (size_t i = 0; i < MAX_IMAGES; i++)
         {
-            stbi_image_free(data[i]);
+            stbi_image_free(images[i]);
         }
     }
 
@@ -60,13 +63,17 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
+    void Coat(int image_type) {
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, tex_w, tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, images[image_type]); //---텍스처 이미지 정의
+    }
+
     int tex_w = 200;
     int tex_h = 200;
 
     int numberOfChannel = 1;
 
-    unsigned char* skydata;
-    unsigned char* data[6];
+    static const int MAX_IMAGES = 4;
+    unsigned char* images[MAX_IMAGES];
 
     unsigned int texture_id;
 };
@@ -98,10 +105,10 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     cam.Set_Proj_Loc(shader_manager.Get_Proj_Loc());
     cam.Init();
 
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.skydata); //---텍스처 이미지 정의
+    tex.Coat(SKY);
     cube.Init_And_Render(shader_manager.Get_Model_Loc());
-
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data[3]); //---텍스처 이미지 정의
+    
+    tex.Coat(GRASS);
     sphere.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
