@@ -3,6 +3,8 @@
 #include "stb_image.h"
 #include "ShaderManager.h"
 #include "Sphere.h"
+#include "Camera.h"
+#include "Light.h"
 
 GLfloat mx = 0.0f;
 GLfloat my = 0.0f;
@@ -23,6 +25,8 @@ GLvoid TimerFunction1(int value);
 GLvoid Mouse(int button, int state, int x, int y);
 
 ShaderManager shader_manager;
+Camera cam;
+Light light;
 Sphere sphere;
 
 class Texture {
@@ -74,12 +78,30 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
 
+    Texture tex;
+    tex.Init();
+
     glUseProgram(shader_program_ID);
 
+    shader_manager.Mapping();
 
-    glutSwapBuffers();
+    light.lightAmbient_loc = shader_manager.lightAmbi_loc;
+    light.lightPos_loc = shader_manager.lightPos_loc;
+    light.lightColor_loc = shader_manager.lightColor_loc;
+    light.objColor_loc = shader_manager.objColor_loc;
+    light.Init();
+
+    cam.view_loc = shader_manager.view_loc;
+    cam.cameraPos_loc = shader_manager.cameraPos_loc;
+    cam.proj_loc = shader_manager.proj_loc;
+    cam.Init();
+
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data[3]); //---텍스처 이미지 정의
+    sphere.Init_And_Render(shader_manager.model_loc);
+
+
     isAllStop = false;
-
+    glutSwapBuffers();
     glDisable(GL_DEPTH_TEST);
     //glDisable(GL_CULL_FACE);
 }
@@ -142,6 +164,7 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
         cerr << "Error: Shader Program 생성 실패" << endl;
         std::exit(EXIT_FAILURE);
     }
+    shader_program_ID = shader_manager.shader_program_ID;
 
     if (!sphere.Init_VAO(shader_program_ID)) {
         cerr << "Error: 구 생성 실패" << endl;
