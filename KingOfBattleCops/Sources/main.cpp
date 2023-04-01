@@ -2,9 +2,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "ShaderManager.h"
-#include "Sphere.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Sphere.h"
+#include "Cube.h"
 
 GLfloat mx = 0.0f;
 GLfloat my = 0.0f;

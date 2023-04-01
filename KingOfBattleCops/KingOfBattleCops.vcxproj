@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Camera.cpp" />
+    <ClCompile Include="Sources\Cube.cpp" />
     <ClCompile Include="Sources\Light.cpp" />
     <ClCompile Include="Sources\main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -183,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\Camera.h" />
+    <ClInclude Include="Sources\Cube.h" />
     <ClInclude Include="Sources\Light.h" />
     <ClInclude Include="Sources\ShaderManager.h" />
     <ClInclude Include="Sources\Shape.h" />
