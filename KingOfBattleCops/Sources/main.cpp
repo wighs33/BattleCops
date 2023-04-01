@@ -29,6 +29,7 @@ ShaderManager shader_manager;
 Camera cam;
 Light light;
 Sphere sphere;
+Cube cube;
 
 class Texture {
 public:
@@ -96,6 +97,9 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     cam.cameraPos_loc = shader_manager.cameraPos_loc;
     cam.proj_loc = shader_manager.proj_loc;
     cam.Init();
+
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.skydata); //---텍스처 이미지 정의
+    cube.Init_And_Render(shader_manager.model_loc);
 
     glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data[3]); //---텍스처 이미지 정의
     sphere.Init_And_Render(shader_manager.model_loc);
@@ -168,6 +172,12 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     shader_program_ID = shader_manager.shader_program_ID;
 
     if (!sphere.Init_VAO(shader_program_ID)) {
+        cerr << "Error: 구 생성 실패" << endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    cube.texturing_face = 2;
+    if (!cube.Init_VAO(shader_program_ID)) {
         cerr << "Error: 구 생성 실패" << endl;
         std::exit(EXIT_FAILURE);
     }
