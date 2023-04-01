@@ -15,6 +15,7 @@ bool isTimer3On = false;
 
 bool isAllStop = false;
 
+class Texture;
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 GLvoid Keyboard(unsigned char key, int x, int y);
@@ -23,6 +24,46 @@ GLvoid Mouse(int button, int state, int x, int y);
 
 ShaderManager shader_manager;
 Sphere sphere;
+
+class Texture {
+public:
+    Texture() : skydata(stbi_load("Resources/sky.jpg", &tex_w, &tex_h, &numberOfChannel, 3)) {
+        data[0] = stbi_load("Resources/tex0.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        data[1] = stbi_load("Resources/tex1.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        data[2] = stbi_load("Resources/tex2.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        data[3] = stbi_load("Resources/tex3.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        data[4] = stbi_load("Resources/tex4.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        data[5] = stbi_load("Resources/tex5.png", &tex_w, &tex_h, &numberOfChannel, 3);
+    }
+
+    ~Texture() {
+        stbi_image_free(skydata);
+
+        for (size_t i = 0; i < 6; i++)
+        {
+            stbi_image_free(data[i]);
+        }
+    }
+
+    void Init() {
+        glGenTextures(1, &texture_id); //--- 텍스처 생성
+        glBindTexture(GL_TEXTURE_2D, texture_id); //--- 텍스처 바인딩
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //--- 현재 바인딩된 텍스처의 파라미터 설정하기
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+    int tex_w = 200;
+    int tex_h = 200;
+
+    int numberOfChannel = 1;
+
+    unsigned char* skydata;
+    unsigned char* data[6];
+
+    unsigned int texture_id;
+};
 
 GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수 
 {
