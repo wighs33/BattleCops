@@ -1,12 +1,8 @@
 #include "stdafx.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-GLvoid drawScene(GLvoid);
-GLvoid Reshape(int w, int h);
-GLvoid Keyboard(unsigned char key, int x, int y);
-GLvoid TimerFunction1(int value);
-GLvoid Mouse(int button, int state, int x, int y);
+#include "ShaderManager.h"
+#include "Sphere.h"
 
 GLfloat mx = 0.0f;
 GLfloat my = 0.0f;
@@ -18,6 +14,15 @@ bool isTimer2On = false;
 bool isTimer3On = false;
 
 bool isAllStop = false;
+
+GLvoid drawScene(GLvoid);
+GLvoid Reshape(int w, int h);
+GLvoid Keyboard(unsigned char key, int x, int y);
+GLvoid TimerFunction1(int value);
+GLvoid Mouse(int button, int state, int x, int y);
+
+ShaderManager shader_manager;
+Sphere sphere;
 
 GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수 
 {
@@ -91,6 +96,16 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
         std::cout << "GLEW Initialized\n";
 
     stbi_set_flip_vertically_on_load(true); //--- 이미지가 거꾸로 읽힌다면 추가
+
+    if (!shader_manager.Init_Program()) {
+        cerr << "Error: Shader Program 생성 실패" << endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    if (!sphere.Init_VAO(shader_program_ID)) {
+        cerr << "Error: 구 생성 실패" << endl;
+        std::exit(EXIT_FAILURE);
+    }
 
 
     glutDisplayFunc(drawScene); // 출력 함수의 지정
