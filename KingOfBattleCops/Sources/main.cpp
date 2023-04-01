@@ -87,22 +87,22 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 
     shader_manager.Mapping();
 
-    light.lightAmbient_loc = shader_manager.lightAmbi_loc;
-    light.lightPos_loc = shader_manager.lightPos_loc;
-    light.lightColor_loc = shader_manager.lightColor_loc;
-    light.objColor_loc = shader_manager.objColor_loc;
+    light.Set_LightAmbient_Loc(shader_manager.Get_LightAmbient_Loc());
+    light.Set_LightPos_Loc(shader_manager.Get_LightPos_Loc());
+    light.Set_LightColor_Loc(shader_manager.Get_LightColor_Loc());
+    light.Set_ObjColor_Loc(shader_manager.Get_ObjColor_Loc());
     light.Init();
 
-    cam.view_loc = shader_manager.view_loc;
-    cam.cameraPos_loc = shader_manager.cameraPos_loc;
-    cam.proj_loc = shader_manager.proj_loc;
+    cam.Set_View_Loc(shader_manager.Get_View_Loc());
+    cam.Set_CameraPos_Loc(shader_manager.Get_CameraPos_Loc());
+    cam.Set_Proj_Loc(shader_manager.Get_Proj_Loc());
     cam.Init();
 
     glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.skydata); //---텍스처 이미지 정의
-    cube.Init_And_Render(shader_manager.model_loc);
+    cube.Init_And_Render(shader_manager.Get_Model_Loc());
 
     glTexImage2D(GL_TEXTURE_2D, 0, 3, tex.tex_w, tex.tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data[3]); //---텍스처 이미지 정의
-    sphere.Init_And_Render(shader_manager.model_loc);
+    sphere.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
     isAllStop = false;

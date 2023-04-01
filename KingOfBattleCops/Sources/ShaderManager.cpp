@@ -87,7 +87,7 @@ void ShaderManager::Mapping()
     view_loc = glGetUniformLocation(shader_program_ID, "g_view");
     proj_loc = glGetUniformLocation(shader_program_ID, "g_projection");
 
-    lightAmbi_loc = glGetUniformLocation(shader_program_ID, "g_lightAmbient");
+    lightAmbient_loc = glGetUniformLocation(shader_program_ID, "g_lightAmbient");
     lightPos_loc = glGetUniformLocation(shader_program_ID, "g_lightPos");
     lightColor_loc = glGetUniformLocation(shader_program_ID, "g_lightColor");
     objColor_loc = glGetUniformLocation(shader_program_ID, "g_objectColor");

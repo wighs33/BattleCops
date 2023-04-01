@@ -11,6 +11,11 @@ public:
 	void Init_View();
 	void Init_Projection();
 
+	void Set_View_Loc(GLuint val) { view_loc = val; }
+	void Set_CameraPos_Loc(GLuint val) { cameraPos_loc = val; }
+	void Set_Proj_Loc(GLuint val) { proj_loc = val; }
+
+private:
 	GLuint view_loc;
 	GLuint cameraPos_loc;
 	GLuint proj_loc;
