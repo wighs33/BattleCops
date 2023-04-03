@@ -34,6 +34,7 @@ Field field;
 Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
+Desk desk;
 
 enum Texture_Image{
     SKY,
@@ -125,6 +126,7 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 
     tex.Coat(WOOD);
     door.Init_And_Render(shader_manager.Get_Model_Loc());
+    desk.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
     isAllStop = false;
@@ -201,9 +203,10 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     test &= lobby.Init_VAO(shader_program_ID);
     test &= lobby_floor.Init_VAO(shader_program_ID);
     test &= door.Init_VAO(shader_program_ID);
+    test &= desk.Init_VAO(shader_program_ID);
 
     if (!test) {
-        cerr << "Error: 구 생성 실패" << endl;
+        cerr << "Error: 오브젝트 생성 실패" << endl;
         std::exit(EXIT_FAILURE);
     }
 

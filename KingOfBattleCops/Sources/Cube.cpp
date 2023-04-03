@@ -74,3 +74,16 @@ void Door::Init_And_Render(int model)
     glBindVertexArray(VAO_ID);
     glDrawArrays(GL_TRIANGLES, 0, NUMOF_VERTICES);
 }
+
+void Desk::Init_And_Render(int model)
+{
+    glm::mat4 m_transform = glm::mat4(1.0f);
+    m_transform = glm::translate(m_transform, glm::vec3(20.0f, -0.5f, -12.0));
+    m_transform = glm::scale(m_transform, glm::vec3(9.0f, 1.0f, 1.0f));
+    m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.5f, 0.0));
+
+    glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(m_transform));
+
+    glBindVertexArray(VAO_ID);
+    glDrawArrays(GL_TRIANGLES, 0, NUMOF_VERTICES);
+}

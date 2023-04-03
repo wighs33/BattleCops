@@ -59,3 +59,11 @@ public:
 
     virtual void Init_And_Render(int model);
 };
+
+class Desk : public Cube
+{
+public:
+    Desk() : Cube(WHOLE) {}
+
+    virtual void Init_And_Render(int model);
+};
