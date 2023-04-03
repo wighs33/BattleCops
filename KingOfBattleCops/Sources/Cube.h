@@ -51,3 +51,11 @@ public:
 
     static const int NUMOF_VERTICES = 6;
 };
+
+class Door : public Cube
+{
+public:
+    Door() : Cube(WHOLE) {}
+
+    virtual void Init_And_Render(int model);
+};

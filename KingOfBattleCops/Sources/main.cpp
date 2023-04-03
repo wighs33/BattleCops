@@ -33,6 +33,7 @@ Sky sky;
 Field field;
 Lobby lobby;
 Lobby_Floor lobby_floor;
+Door door;
 
 enum Texture_Image{
     SKY,
@@ -112,9 +113,6 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 
     tex.Coat(SKY);
     sky.Init_And_Render(shader_manager.Get_Model_Loc());
-    
-    //tex.Coat(GRASS);
-    //sphere.Init_And_Render(shader_manager.Get_Model_Loc());
 
     tex.Coat(GRASS);
     field.Init_And_Render(shader_manager.Get_Model_Loc());
@@ -124,6 +122,9 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 
     tex.Coat(WOODFLOOR);
     lobby_floor.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    tex.Coat(WOOD);
+    door.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
     isAllStop = false;
@@ -193,31 +194,18 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 
     shader_program_ID = shader_manager.shader_program_ID;
 
-    if (!sphere.Init_VAO(shader_program_ID)) {
+    bool test = true;
+    test &= sphere.Init_VAO(shader_program_ID);
+    test &= sky.Init_VAO(shader_program_ID);
+    test &= field.Init_VAO(shader_program_ID);
+    test &= lobby.Init_VAO(shader_program_ID);
+    test &= lobby_floor.Init_VAO(shader_program_ID);
+    test &= door.Init_VAO(shader_program_ID);
+
+    if (!test) {
         cerr << "Error: 구 생성 실패" << endl;
         std::exit(EXIT_FAILURE);
     }
-
-    if (!sky.Init_VAO(shader_program_ID)) {
-        cerr << "Error: 앞면 생성 실패" << endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    if (!field.Init_VAO(shader_program_ID)) {
-        cerr << "Error: 바닥 생성 실패" << endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    if (!lobby.Init_VAO(shader_program_ID)) {
-        cerr << "Error: 바닥 생성 실패" << endl;
-        std::exit(EXIT_FAILURE);
-    }
-
-    if (!lobby_floor.Init_VAO(shader_program_ID)) {
-        cerr << "Error: 바닥 생성 실패" << endl;
-        std::exit(EXIT_FAILURE);
-    }
-
 
     glutDisplayFunc(drawScene); // 출력 함수의 지정
     glutReshapeFunc(Reshape); // 다시 그리기 함수 지정
