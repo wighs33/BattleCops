@@ -29,13 +29,17 @@ ShaderManager shader_manager;
 Camera cam;
 Light light;
 Sphere sphere;
-Cube cube;
+Sky sky;
+Field field;
+Lobby lobby;
+Lobby_Floor lobby_floor;
 
-enum {
+enum Texture_Image{
     SKY,
     GRASS,
     WALL,
-    WOOD
+    WOOD,
+    WOODFLOOR
 };
 
 class Texture {
@@ -45,6 +49,7 @@ public:
         images[1] = stbi_load("Resources/grass.png", &tex_w, &tex_h, &numberOfChannel, 3);
         images[2] = stbi_load("Resources/wall.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[3] = stbi_load("Resources/wood.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
+        images[4] = stbi_load("Resources/lobbyfloortex.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
     }
 
     ~Texture() {
@@ -72,7 +77,7 @@ public:
 
     int numberOfChannel = 1;
 
-    static const int MAX_IMAGES = 4;
+    static const int MAX_IMAGES = 5;
     unsigned char* images[MAX_IMAGES];
 
     unsigned int texture_id;
@@ -106,10 +111,19 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     cam.Init();
 
     tex.Coat(SKY);
-    cube.Init_And_Render(shader_manager.Get_Model_Loc());
+    sky.Init_And_Render(shader_manager.Get_Model_Loc());
     
+    //tex.Coat(GRASS);
+    //sphere.Init_And_Render(shader_manager.Get_Model_Loc());
+
     tex.Coat(GRASS);
-    sphere.Init_And_Render(shader_manager.Get_Model_Loc());
+    field.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    tex.Coat(WALL);
+    lobby.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    tex.Coat(WOODFLOOR);
+    lobby_floor.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
     isAllStop = false;
@@ -176,6 +190,7 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
         cerr << "Error: Shader Program 생성 실패" << endl;
         std::exit(EXIT_FAILURE);
     }
+
     shader_program_ID = shader_manager.shader_program_ID;
 
     if (!sphere.Init_VAO(shader_program_ID)) {
@@ -183,9 +198,23 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
         std::exit(EXIT_FAILURE);
     }
 
-    cube.texturing_face = 2;
-    if (!cube.Init_VAO(shader_program_ID)) {
-        cerr << "Error: 구 생성 실패" << endl;
+    if (!sky.Init_VAO(shader_program_ID)) {
+        cerr << "Error: 앞면 생성 실패" << endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    if (!field.Init_VAO(shader_program_ID)) {
+        cerr << "Error: 바닥 생성 실패" << endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    if (!lobby.Init_VAO(shader_program_ID)) {
+        cerr << "Error: 바닥 생성 실패" << endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    if (!lobby_floor.Init_VAO(shader_program_ID)) {
+        cerr << "Error: 바닥 생성 실패" << endl;
         std::exit(EXIT_FAILURE);
     }
 

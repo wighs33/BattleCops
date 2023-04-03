@@ -1,5 +1,11 @@
 #pragma once
 
+enum Cube_Face {
+    WHOLE = -1,
+    FLOOR = 1,
+    FRONT = 2
+};
+
 class Shape {
 public:
     virtual void Color() {}

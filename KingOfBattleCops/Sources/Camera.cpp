@@ -3,11 +3,8 @@
 
 void Camera::Init_View()
 {
+	cameraDirection = glm::vec3(cameraPos.x, cameraPos.y / 2 - 1.0, cameraPos.z - 10.0);
 	v_transform = glm::lookAt(cameraPos, cameraDirection, cameraUp);
-
-	//v_transform = glm::rotate(v_transform, glm::radians(rotation), glm::vec3(0.0, 1.0, 0.0));
-	//v_transform = glm::translate(v_transform, glm::vec3(0.0, 0.0, -10.0f + z_move));
-	//v_transform = glm::rotate(v_transform, glm::radians(revolution), glm::vec3(0.0, 1.0, 0.0));
 
 	glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(v_transform));
 	glUniform3fv(cameraPos_loc, 1, (float*)&cameraPos);
