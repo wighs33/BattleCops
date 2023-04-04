@@ -55,7 +55,7 @@ public:
 	glm::vec3 leg_and_arm_size = glm::vec3(0.1, 0.4, 0.1);
 
 	int jump;
-	int dir;
+	int dir = DIR_BACK;
 	int state;
 };
 

@@ -50,6 +50,7 @@ Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
 Desk desk;
+vector<Robot> ai_robots;
 Robot player_robot(20.0f, 0.0f);
 
 enum Texture_Image{
@@ -146,9 +147,18 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     door.Init_And_Render(shader_manager.Get_Model_Loc());
     desk.Init_And_Render(shader_manager.Get_Model_Loc());
 
-    for (size_t i = 0; i < player_robot.MAX_BODIES; i++)
+    for (size_t i = 0; i < Robot::MAX_BODIES; i++)
         player_robot.bodies[i].Set_Colors(glm::vec3(1.0, 0.0, 0.0), shader_manager.Get_ObjColor_Loc());
     player_robot.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    glm::vec3 temp_colors[3] = { glm::vec3(0.0, 0.0, 1.0), glm::vec3(1.0, 1.0, 0.0), glm::vec3(0.0, 1.0, 0.0) };
+
+	for (size_t i = 0; i < 3; i++)
+		for (size_t j = 0; j < Robot::MAX_BODIES; j++)
+		{
+			ai_robots[i].bodies[j].Set_Colors(temp_colors[i], shader_manager.Get_ObjColor_Loc());
+			ai_robots[i].Init_And_Render(shader_manager.Get_Model_Loc());
+		}
 
 
     isAllStop = false;
@@ -266,12 +276,6 @@ GLvoid GameStartCheckTimer(int value)
 		//glutTimerFunc(1000, missileCreateTimer, 1);
 		//glutTimerFunc(100, comMoveTimer, 1);
 		//glutTimerFunc(3000, changeDirTimer, 1);
-		//robot1.comDir = BACK;
-		//robot2.comDir = BACK;
-		//robot3.comDir = BACK;
-		//comRobot.push_back(robot1);
-		//comRobot.push_back(robot2);
-		//comRobot.push_back(robot3);
 		is_start_check_timer_on = false;
     }
 
@@ -339,11 +343,22 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     test &= door.Init_VAO(shader_program_ID);
     test &= desk.Init_VAO(shader_program_ID);
 
-    for (size_t i = 0; i < player_robot.MAX_BODIES; i++)
+    for (size_t i = 0; i < Robot::MAX_BODIES; i++)
     {
         player_robot.bodies[i].is_textured = false;
         test &= player_robot.bodies[i].Init_VAO(shader_program_ID);
     }
+
+    ai_robots.emplace_back(Robot(8.0f, -8.0f));
+    ai_robots.emplace_back(Robot(-8.0f, -8.0f));
+    ai_robots.emplace_back(Robot(-8.0f, 8.0f));
+
+    for (size_t num = 0; num < 3; num++)
+        for (size_t i = 0; i < Robot::MAX_BODIES; i++)
+        {
+            ai_robots[num].bodies[i].is_textured = false;
+            test &= ai_robots[num].bodies[i].Init_VAO(shader_program_ID);
+        }
 
     if (!test) {
         cerr << "Error: 오브젝트 생성 실패" << endl;
