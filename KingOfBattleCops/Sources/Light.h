@@ -11,7 +11,7 @@ public:
     void Set_ObjColor_Loc(GLuint val) { objColor_loc = val; }
 
     glm::vec3 object_color = glm::vec3(1.0, 1.0, 1.0);
-    glm::vec3 light_ambient = glm::vec3(0.1, 0.1, 0.1);
+    glm::vec3 light_ambient = glm::vec3(0.5, 0.5, 0.5);
     glm::vec3 light_pos = glm::vec3(3.0, 3.0, 0.0);
     glm::vec3 light_color = glm::vec3(1.0, 1.0, 1.0);
 

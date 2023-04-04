@@ -4,6 +4,10 @@
 class Cube : public Shape
 {
 public:
+    Cube() {
+        path_ = "Resources/cube.obj";
+    }
+
     Cube(int face) { 
         path_ = "Resources/cube.obj";
         texturing_face = face;
@@ -17,7 +21,7 @@ public:
 class Sky : public Cube
 {
 public:
-    Sky() : Cube(FRONT){}
+    Sky() : Cube(CUBE_FRONT){}
 
     virtual void Init_And_Render(int model);
 
@@ -27,7 +31,7 @@ public:
 class Field : public Cube
 {
 public:
-    Field() : Cube(FLOOR) {}
+    Field() : Cube(CUBE_FLOOR) {}
 
     virtual void Init_And_Render(int model);
 
@@ -37,7 +41,7 @@ public:
 class Lobby : public Cube
 {
 public:
-    Lobby() : Cube(WHOLE) {}
+    Lobby() : Cube(CUBE_WHOLE) {}
 
     virtual void Init_And_Render(int model);
 };
@@ -45,7 +49,7 @@ public:
 class Lobby_Floor : public Cube
 {
 public:
-    Lobby_Floor() : Cube(FLOOR) {}
+    Lobby_Floor() : Cube(CUBE_FLOOR) {}
 
     virtual void Init_And_Render(int model);
 
@@ -55,7 +59,7 @@ public:
 class Door : public Cube
 {
 public:
-    Door() : Cube(WHOLE) {}
+    Door() : Cube(CUBE_WHOLE) {}
 
     virtual void Init_And_Render(int model);
 };
@@ -63,7 +67,7 @@ public:
 class Desk : public Cube
 {
 public:
-    Desk() : Cube(WHOLE) {}
+    Desk() : Cube(CUBE_WHOLE) {}
 
     virtual void Init_And_Render(int model);
 };

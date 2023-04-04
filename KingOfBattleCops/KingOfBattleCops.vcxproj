@@ -156,6 +156,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Sources\Robot.cpp" />
     <ClCompile Include="Sources\ShaderManager.cpp" />
     <ClCompile Include="Sources\Shape.cpp" />
     <ClCompile Include="Sources\Sphere.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Sources\Camera.h" />
     <ClInclude Include="Sources\Cube.h" />
     <ClInclude Include="Sources\Light.h" />
+    <ClInclude Include="Sources\Robot.h" />
     <ClInclude Include="Sources\ShaderManager.h" />
     <ClInclude Include="Sources\Shape.h" />
     <ClInclude Include="Sources\Sphere.h" />

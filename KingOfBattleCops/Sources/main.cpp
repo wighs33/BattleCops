@@ -6,6 +6,7 @@
 #include "Light.h"
 #include "Sphere.h"
 #include "Cube.h"
+#include "Robot.h"
 
 GLfloat mx = 0.0f;
 GLfloat my = 0.0f;
@@ -35,13 +36,15 @@ Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
 Desk desk;
+Robot player_robot(20.0f, 0.0f);
 
 enum Texture_Image{
     SKY,
     GRASS,
     WALL,
     WOOD,
-    WOODFLOOR
+    WOODFLOOR,
+    NONE
 };
 
 class Texture {
@@ -52,6 +55,7 @@ public:
         images[2] = stbi_load("Resources/wall.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[3] = stbi_load("Resources/wood.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[4] = stbi_load("Resources/lobbyfloortex.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
+        images[5] = nullptr;
     }
 
     ~Texture() {
@@ -79,7 +83,7 @@ public:
 
     int numberOfChannel = 1;
 
-    static const int MAX_IMAGES = 5;
+    static const int MAX_IMAGES = 6;
     unsigned char* images[MAX_IMAGES];
 
     unsigned int texture_id;
@@ -127,6 +131,10 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     tex.Coat(WOOD);
     door.Init_And_Render(shader_manager.Get_Model_Loc());
     desk.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    for (size_t i = 0; i < player_robot.MAX_BODIES; i++)
+        player_robot.bodies[i].Set_Colors(glm::vec3(1.0, 0.0, 0.0), shader_manager.Get_ObjColor_Loc());
+    player_robot.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
     isAllStop = false;
@@ -204,6 +212,12 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     test &= lobby_floor.Init_VAO(shader_program_ID);
     test &= door.Init_VAO(shader_program_ID);
     test &= desk.Init_VAO(shader_program_ID);
+
+    for (size_t i = 0; i < player_robot.MAX_BODIES; i++)
+    {
+        player_robot.bodies[i].is_textured = false;
+        test &= player_robot.bodies[i].Init_VAO(shader_program_ID);
+    }
 
     if (!test) {
         cerr << "Error: 오브젝트 생성 실패" << endl;

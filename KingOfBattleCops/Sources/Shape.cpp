@@ -116,20 +116,23 @@ bool Shape::Init_VAO(GLuint shader_program_ID)
 	glEnableVertexAttribArray(normalAttribute);
 
 	//uv
-	glGenBuffers(1, &uv_VBO_ID);
-	glBindBuffer(GL_ARRAY_BUFFER, uv_VBO_ID);
-	if (texturing_face == -1)
-		glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-	else
-		glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2)/6, &uvs[0] + texturing_face * 6, GL_STATIC_DRAW);
+    if (is_textured)
+    {
+        glGenBuffers(1, &uv_VBO_ID);
+        glBindBuffer(GL_ARRAY_BUFFER, uv_VBO_ID);
+        if (texturing_face == -1)
+            glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+        else
+            glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2) / 6, &uvs[0] + texturing_face * 6, GL_STATIC_DRAW);
 
-    GLint uvAttribute = glGetAttribLocation(shader_program_ID, "in_uv");
-    if (uvAttribute == -1) {
-        cerr << " uv 속성 설정 실패" << endl;
-        return false;
+        GLint uvAttribute = glGetAttribLocation(shader_program_ID, "in_uv");
+        if (uvAttribute == -1) {
+            cerr << " uv 속성 설정 실패" << endl;
+            return false;
+        }
+        glVertexAttribPointer(uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(uvAttribute);
     }
-    glVertexAttribPointer(uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(uvAttribute);
 
     //칼라
     //glGenBuffers(1, &color_VBO_ID);
