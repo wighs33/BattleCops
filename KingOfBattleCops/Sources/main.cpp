@@ -16,6 +16,9 @@ GLuint shader_program_ID;
 bool is_move_timer_on = false;
 bool is_update_timer_on = true;
 bool is_start_check_timer_on = true;
+bool is_ai_move_timer_on = true;
+bool is_random_dir_timer_on = true;
+bool is_stone_create_timer_on = true;
 
 bool isAllStop = false;
 
@@ -30,15 +33,16 @@ GLvoid SpecialKeyPress(int key, int x, int y);
 GLvoid SpecialKeyUp(int key, int x, int y);
 GLvoid Mouse(int button, int state, int x, int y);
 
-GLvoid MoveTimer(int value);
+GLvoid WorkMotionTimer(int value);
 GLvoid GameUpdateTimer(int value);
 GLvoid GameStartCheckTimer(int value);
-GLvoid stoneCreateTimer(int value);
-GLvoid missileCreateTimer(int value);
-GLvoid stoneThrowTimer(int value);
-GLvoid comStoneThrowTimer(int value);
-GLvoid changeDirTimer(int value);
-GLvoid comMoveTimer(int value);
+GLvoid AiMoveTimer(int value);
+GLvoid RandomDirTimer(int value);
+GLvoid StoneCreateTimer(int value);
+//GLvoid missileCreateTimer(int value);
+//GLvoid stoneThrowTimer(int value);
+//GLvoid comStoneThrowTimer(int value);
+//GLvoid RandomDirTimer(int value);
 
 ShaderManager shader_manager;
 Camera cam;
@@ -183,7 +187,7 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
         player_robot.y_rotate = 180.0f;
 
         if (!is_move_timer_on)
-            glutTimerFunc(100, MoveTimer, 1);
+            glutTimerFunc(100, WorkMotionTimer, 1);
         is_move_timer_on = true;
         break;
     case GLUT_KEY_DOWN:
@@ -195,7 +199,7 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
         player_robot.y_rotate = 0.0f;
 
         if (!is_move_timer_on)
-            glutTimerFunc(100, MoveTimer, 1);
+            glutTimerFunc(100, WorkMotionTimer, 1);
         is_move_timer_on = true;
         break;
     case GLUT_KEY_LEFT:
@@ -210,7 +214,7 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
         player_robot.y_rotate = -90.0f;
 
         if (!is_move_timer_on)
-            glutTimerFunc(100, MoveTimer, 1);
+            glutTimerFunc(100, WorkMotionTimer, 1);
         is_move_timer_on = true;
         break;
     case GLUT_KEY_RIGHT:
@@ -222,7 +226,7 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
         player_robot.y_rotate = 90.0f;
 
         if (!is_move_timer_on)
-            glutTimerFunc(100, MoveTimer, 1);
+            glutTimerFunc(100, WorkMotionTimer, 1);
         is_move_timer_on = true;
         break;
     }
@@ -272,10 +276,15 @@ GLvoid GameStartCheckTimer(int value)
 		cam.Set_CameraPos(glm::vec3(0.0, 22.0, 19.0));
 		player_robot.x_move = 8.0;
 		player_robot.z_move = 8.0;
-		//glutTimerFunc(1000, stoneCreateTimer, 1);
+
+        is_ai_move_timer_on = true;
+        glutTimerFunc(100, AiMoveTimer, 1);
+        is_stone_create_timer_on = true;
+		glutTimerFunc(1000, StoneCreateTimer, 1);
+        is_random_dir_timer_on = true;
+        glutTimerFunc(3000, RandomDirTimer, 1);
 		//glutTimerFunc(1000, missileCreateTimer, 1);
 		//glutTimerFunc(100, comMoveTimer, 1);
-		//glutTimerFunc(3000, changeDirTimer, 1);
 		is_start_check_timer_on = false;
     }
 
@@ -285,7 +294,7 @@ GLvoid GameStartCheckTimer(int value)
 }
 
 //로봇이 팔다리를 흔듦
-GLvoid MoveTimer(int value)
+GLvoid WorkMotionTimer(int value)
 {
     if (player_robot.x_rotate > 30.0f or player_robot.x_rotate < -30.0f)
         player_robot.is_forward ^= 1;
@@ -297,7 +306,87 @@ GLvoid MoveTimer(int value)
 
     glutPostRedisplay(); // 화면 재 출력
     if (is_move_timer_on)
-        glutTimerFunc(100, MoveTimer, 1);
+        glutTimerFunc(100, WorkMotionTimer, 1);
+}
+
+GLvoid AiMoveTimer(int value)
+{
+    for (auto& bot : ai_robots)
+    {
+        if (bot.x_rotate > 30.0f or bot.x_rotate < -30.0f)
+            bot.is_forward ^= 1;
+
+        if (bot.is_forward)
+            bot.x_rotate += bot.rotate_rate;
+        else
+            bot.x_rotate -= bot.rotate_rate;
+    }
+
+    for (auto& bot : ai_robots)
+    {
+		if (bot.dir == DIR_FRONT) {
+            if (bot.z_move < -14.8)
+            {
+                bot.dir = DIR_BACK;
+                break;
+            }
+
+            bot.y_rotate = 180.0f;
+			bot.z_move -= 0.1;
+		}
+		else if (bot.dir == DIR_BACK) {
+            if (bot.z_move > 14.8)
+            {
+                bot.dir = DIR_FRONT;
+                break;
+            }
+
+            bot.y_rotate = 0.0f;
+            bot.z_move += 0.1;
+		}
+		else if (bot.dir == DIR_LEFT) {
+            if (bot.x_move < -14.8)
+            {
+                bot.dir = DIR_RIGHT;
+                break;
+            }
+
+            bot.y_rotate = -90.0f;
+            bot.x_move -= 0.1;
+		}
+		else if (bot.dir == DIR_RIGHT) {
+            if (bot.x_move > 14.8)
+            {
+                bot.dir = DIR_LEFT;
+                break;
+            }
+
+            bot.y_rotate = 90.0f;
+            bot.x_move += 0.1;
+		}
+    }
+
+    glutPostRedisplay(); // 화면 재 출력
+    if (is_ai_move_timer_on)
+        glutTimerFunc(100, AiMoveTimer, 1);
+}
+
+GLvoid RandomDirTimer(int value)
+{
+    for (auto& bot : ai_robots) {
+        bot.dir = dirDist(eng);
+    }
+
+	glutPostRedisplay(); // 화면 재 출력
+	if (is_random_dir_timer_on)
+		glutTimerFunc(3000, RandomDirTimer, 1);
+}
+
+GLvoid StoneCreateTimer(int value)
+{
+    glutPostRedisplay(); // 화면 재 출력
+    if (is_stone_create_timer_on)
+        glutTimerFunc(1000, StoneCreateTimer, 1);
 }
 
 GLvoid Mouse(int button, int state, int x, int y)
@@ -353,11 +442,11 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     ai_robots.emplace_back(Robot(-8.0f, -8.0f));
     ai_robots.emplace_back(Robot(-8.0f, 8.0f));
 
-    for (size_t num = 0; num < 3; num++)
+    for (auto& bot : ai_robots)
         for (size_t i = 0; i < Robot::MAX_BODIES; i++)
         {
-            ai_robots[num].bodies[i].is_textured = false;
-            test &= ai_robots[num].bodies[i].Init_VAO(shader_program_ID);
+            bot.bodies[i].is_textured = false;
+            test &= bot.bodies[i].Init_VAO(shader_program_ID);
         }
 
     if (!test) {

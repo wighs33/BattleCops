@@ -22,6 +22,32 @@ const int WIN_X = 10, WIN_Y = 10;
 
 const glm::vec3 background_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
+enum Robot_Body {
+	LEFT_LEG,
+	RIGHT_LEG,
+	TORSO,
+	LEFT_ARM,
+	RIGHT_ARM,
+	HEAD,
+	NOSE
+};
+
+enum Robot_State {
+	JUMP_UP,
+	JUMP_DOWN,
+	IDLE,
+	WALK
+};
+
+enum Robot_Direction {
+	DIR_FRONT, 
+	DIR_BACK, 
+	DIR_LEFT, 
+	DIR_RIGHT, 
+	DIR_STOP 
+};
+
 static random_device seeder;
 static mt19937 eng(seeder());
 static uniform_real_distribution<float> dist(0.0f, 1.0f);
+static uniform_int_distribution<int> dirDist(DIR_FRONT, DIR_RIGHT);

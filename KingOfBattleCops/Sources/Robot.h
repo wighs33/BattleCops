@@ -1,25 +1,6 @@
 #pragma once
 #include "Cube.h"
 
-enum Body {
-	LEFT_LEG,
-	RIGHT_LEG,
-	TORSO,
-	LEFT_ARM,
-	RIGHT_ARM,
-	HEAD,
-	NOSE
-};
-
-enum State {
-	JUMP_UP,
-	JUMP_DOWN,
-	IDLE,
-	WALK
-};
-
-enum direction { DIR_FRONT, DIR_BACK, DIR_LEFT, DIR_RIGHT, DIR_STOP };
-
 class Robot
 {
 public:
