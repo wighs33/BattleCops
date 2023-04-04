@@ -11,10 +11,11 @@ enum Body {
 	NOSE
 };
 
-enum Jump {
-	UP,
-	DOWN,
-	LAND
+enum State {
+	JUMP_UP,
+	JUMP_DOWN,
+	IDLE,
+	WALK
 };
 
 enum direction { DIR_FRONT, DIR_BACK, DIR_LEFT, DIR_RIGHT, DIR_STOP };
@@ -55,5 +56,6 @@ public:
 
 	int jump;
 	int dir;
+	int state;
 };
 

@@ -15,6 +15,8 @@ public:
 	void Set_CameraPos_Loc(GLuint val) { cameraPos_loc = val; }
 	void Set_Proj_Loc(GLuint val) { proj_loc = val; }
 
+	void Set_CameraPos(glm::vec3 val) { cameraPos = val; }
+
 private:
 	GLuint view_loc;
 	GLuint cameraPos_loc;
