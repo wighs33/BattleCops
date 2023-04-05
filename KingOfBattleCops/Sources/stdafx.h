@@ -47,7 +47,16 @@ enum Robot_Direction {
 	DIR_STOP 
 };
 
+enum Texture_Image {
+	SKY,
+	GRASS,
+	WALL,
+	WOOD,
+	WOODFLOOR,
+	STONE
+};
+
 static random_device seeder;
 static mt19937 eng(seeder());
-static uniform_real_distribution<float> dist(0.0f, 1.0f);
 static uniform_int_distribution<int> dirDist(DIR_FRONT, DIR_RIGHT);
+static uniform_real_distribution<double> posDist(-14.0, 14.0);

@@ -71,3 +71,14 @@ public:
 
     virtual void Init_And_Render(int model);
 };
+
+class Stone : public Cube
+{
+public:
+    Stone(double x, double z) : pos (glm::vec3(x, 0.0f, z)), Cube(CUBE_WHOLE) {}
+
+    glm::vec3 pos;
+    glm::vec3 scale = glm::vec3(0.5f, 0.5f, 0.5f);
+
+    virtual void Init_And_Render(int model);
+};

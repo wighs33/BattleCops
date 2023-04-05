@@ -19,6 +19,7 @@ bool is_start_check_timer_on = true;
 bool is_ai_move_timer_on = true;
 bool is_random_dir_timer_on = true;
 bool is_stone_create_timer_on = true;
+bool is_missile_create_timer_on = true;
 
 bool isAllStop = false;
 
@@ -39,7 +40,7 @@ GLvoid GameStartCheckTimer(int value);
 GLvoid AiMoveTimer(int value);
 GLvoid RandomDirTimer(int value);
 GLvoid StoneCreateTimer(int value);
-//GLvoid missileCreateTimer(int value);
+GLvoid MissileCreateTimer(int value);
 //GLvoid stoneThrowTimer(int value);
 //GLvoid comStoneThrowTimer(int value);
 //GLvoid RandomDirTimer(int value);
@@ -54,17 +55,11 @@ Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
 Desk desk;
-vector<Robot> ai_robots;
 Robot player_robot(20.0f, 0.0f);
 
-enum Texture_Image{
-    SKY,
-    GRASS,
-    WALL,
-    WOOD,
-    WOODFLOOR,
-    NONE
-};
+vector<Robot> ai_robots;
+vector<Stone> stoneList;
+//vector<Missile> missileList;
 
 class Texture {
 public:
@@ -74,7 +69,7 @@ public:
         images[2] = stbi_load("Resources/wall.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[3] = stbi_load("Resources/wood.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[4] = stbi_load("Resources/lobbyfloortex.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
-        images[5] = nullptr;
+        images[5] = stbi_load("Resources/stone.png", &tex_w, &tex_h, &numberOfChannel, 3);
     }
 
     ~Texture() {
@@ -93,7 +88,9 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
-    void Coat(int image_type) {
+    void Coat(GLuint objColor_loc, int image_type){
+        glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+        glUniform3fv(objColor_loc, 1, (float*)&color);
         glTexImage2D(GL_TEXTURE_2D, 0, 3, tex_w, tex_h, 0, GL_RGB, GL_UNSIGNED_BYTE, images[image_type]); //---텍스처 이미지 정의
     }
 
@@ -135,19 +132,19 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     cam.Set_Proj_Loc(shader_manager.Get_Proj_Loc());
     cam.Init();
 
-    tex.Coat(SKY);
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), SKY);
     sky.Init_And_Render(shader_manager.Get_Model_Loc());
 
-    tex.Coat(GRASS);
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), GRASS);
     field.Init_And_Render(shader_manager.Get_Model_Loc());
 
-    tex.Coat(WALL);
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), WALL);
     lobby.Init_And_Render(shader_manager.Get_Model_Loc());
 
-    tex.Coat(WOODFLOOR);
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), WOODFLOOR);
     lobby_floor.Init_And_Render(shader_manager.Get_Model_Loc());
 
-    tex.Coat(WOOD);
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), WOOD);
     door.Init_And_Render(shader_manager.Get_Model_Loc());
     desk.Init_And_Render(shader_manager.Get_Model_Loc());
 
@@ -163,6 +160,11 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 			ai_robots[i].bodies[j].Set_Colors(temp_colors[i], shader_manager.Get_ObjColor_Loc());
 			ai_robots[i].Init_And_Render(shader_manager.Get_Model_Loc());
 		}
+
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), STONE);
+    if (stoneList.size() > 0)
+        for (Stone stone : stoneList)
+            stone.Init_And_Render(shader_manager.Get_Model_Loc());
 
 
     isAllStop = false;
@@ -384,10 +386,27 @@ GLvoid RandomDirTimer(int value)
 
 GLvoid StoneCreateTimer(int value)
 {
+    Stone stone(posDist(eng), posDist(eng));
+    stone.Init_VAO(shader_program_ID);
+
+    stoneList.push_back(stone);
+
     glutPostRedisplay(); // 화면 재 출력
     if (is_stone_create_timer_on)
-        glutTimerFunc(1000, StoneCreateTimer, 1);
+        glutTimerFunc(2000, StoneCreateTimer, 1);
 }
+
+//GLvoid MissileCreateTimer(int value)
+//{
+//    Missile missile(posDist(eng), posDist(eng));
+//    missile.Init_VAO(shader_program_ID);
+//
+//    stoneList.push_back(missile);
+//
+//    glutPostRedisplay(); // 화면 재 출력
+//    if (is_missile_create_timer_on)
+//        glutTimerFunc(2000, StoneCreateTimer, 1);
+//}
 
 GLvoid Mouse(int button, int state, int x, int y)
 {
