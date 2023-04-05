@@ -4,7 +4,7 @@
 class Robot
 {
 public:
-	Robot(double x, double z) : x_move(x), z_move(z) {}
+	Robot(double x, double z) : pos(glm::vec3(x, 0.0, z)) {}
 
 	void Init_And_Render(int model);
 
@@ -24,9 +24,7 @@ public:
 	float y_rotate = 0.0f;
 	float z_rotate = 0.0f;
 
-	double x_move = 0.0f;
-	double y_move = 0.0f;
-	double z_move = 0.0f;
+	glm::vec3 pos;
 
 	const float rotate_rate = 5.0f;
 	const float move_rate = 0.1f;
@@ -37,6 +35,8 @@ public:
 
 	int jump;
 	int dir = DIR_BACK;
-	int state;
+	int state = IDLE;
+
+	int retained_stone_index = -1;
 };
 

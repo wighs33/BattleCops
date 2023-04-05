@@ -75,7 +75,7 @@ public:
 class Stone : public Cube
 {
 public:
-    Stone(double x, double z) : pos (glm::vec3(x, 0.0f, z)), Cube(CUBE_WHOLE) {}
+    Stone(double x = 0.0f, double z = 0.0f) : pos (glm::vec3(x, 0.0f, z)), Cube(CUBE_WHOLE) {}
 
     glm::vec3 pos;
     glm::vec3 scale = glm::vec3(0.5f, 0.5f, 0.5f);

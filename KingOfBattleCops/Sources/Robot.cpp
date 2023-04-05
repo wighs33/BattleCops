@@ -13,7 +13,7 @@ void Robot::Init_And_Render(int model) {
 
 void Robot::Init_And_Render_Left_Leg(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, -0.1, 0.0));
 	m_transform = glm::rotate(m_transform, glm::radians(x_rotate), glm::vec3(1.0, 0.0, 0.0));
@@ -26,7 +26,7 @@ void Robot::Init_And_Render_Left_Leg(int model) {
 
 void Robot::Init_And_Render_Right_Leg(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, -0.1, 0.0));
 	m_transform = glm::rotate(m_transform, glm::radians(-x_rotate), glm::vec3(1.0, 0.0, 0.0));
@@ -39,7 +39,7 @@ void Robot::Init_And_Render_Right_Leg(int model) {
 
 void Robot::Init_And_Render_Torso(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.2, 0.0));
 	m_transform = glm::scale(m_transform, glm::vec3(0.4, 0.6, 0.4));
@@ -50,7 +50,7 @@ void Robot::Init_And_Render_Torso(int model) {
 
 void Robot::Init_And_Render_Left_Arm(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.35, 0.0));
 	m_transform = glm::rotate(m_transform, glm::radians(-x_rotate), glm::vec3(1.0, 0.0, 0.0));
@@ -63,7 +63,7 @@ void Robot::Init_And_Render_Left_Arm(int model) {
 
 void Robot::Init_And_Render_Right_Arm(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.35, 0.0));
 	m_transform = glm::rotate(m_transform, glm::radians(x_rotate), glm::vec3(1.0, 0.0, 0.0));
@@ -76,7 +76,7 @@ void Robot::Init_And_Render_Right_Arm(int model) {
 
 void Robot::Init_And_Render_Head(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.6, 0.0));
 	m_transform = glm::scale(m_transform, glm::vec3(0.2, 0.2, 0.2));
@@ -87,7 +87,7 @@ void Robot::Init_And_Render_Head(int model) {
 
 void Robot::Init_And_Render_Nose(int model) {
 	glm::mat4 m_transform = glm::mat4(1.0f);
-	m_transform = glm::translate(m_transform, glm::vec3(x_move, y_move, z_move));
+	m_transform = glm::translate(m_transform, pos);
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.6, 0.1));
 	m_transform = glm::scale(m_transform, glm::vec3(0.05, 0.1, 0.05));

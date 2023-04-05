@@ -44,7 +44,6 @@ GLvoid StoneCreateTimer(int value);
 GLvoid MissileCreateTimer(int value);
 //GLvoid stoneThrowTimer(int value);
 //GLvoid comStoneThrowTimer(int value);
-//GLvoid RandomDirTimer(int value);
 
 ShaderManager shader_manager;
 Camera cam;
@@ -191,8 +190,8 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
     switch (key) {
     case GLUT_KEY_UP:
         player_robot.dir = DIR_FRONT;
-        if (player_robot.z_move > -14.8)
-            player_robot.z_move -= 0.1;
+        if (player_robot.pos.z > -14.8)
+            player_robot.pos.z -= 0.1f;
         player_robot.y_rotate = 180.0f;
 
         if (!is_move_timer_on)
@@ -201,10 +200,10 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
         break;
     case GLUT_KEY_DOWN:
         player_robot.dir = DIR_BACK;
-        if (gamestate == LOBBY && player_robot.z_move < 10.0)
-            player_robot.z_move += 0.1;
-        else if (gamestate == START && player_robot.z_move < 14.8)
-            player_robot.z_move += 0.1;
+        if (gamestate == LOBBY && player_robot.pos.z < 10.0)
+            player_robot.pos.z += 0.1f;
+        else if (gamestate == START && player_robot.pos.z < 14.8)
+            player_robot.pos.z += 0.1f;
         player_robot.y_rotate = 0.0f;
 
         if (!is_move_timer_on)
@@ -214,12 +213,12 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
     case GLUT_KEY_LEFT:
         player_robot.dir = DIR_LEFT;
         //벽과 충돌체크, 문은 통과
-        if ((player_robot.z_move > 0.5 || player_robot.z_move < -0.5) && player_robot.x_move < 15.2);
+        if ((player_robot.pos.z > 0.5 || player_robot.pos.z < -0.5) && player_robot.pos.x < 15.2);
         else if(gamestate == LOBBY)
-            player_robot.x_move -= 0.1;
+            player_robot.pos.x -= 0.1f;
 
-        if (gamestate == START && player_robot.x_move > -14.8)
-            player_robot.x_move -= 0.1;
+        if (gamestate == START && player_robot.pos.x > -14.8)
+            player_robot.pos.x -= 0.1f;
         player_robot.y_rotate = -90.0f;
 
         if (!is_move_timer_on)
@@ -228,10 +227,10 @@ GLvoid SpecialKeyPress(int key, int x, int y) {
         break;
     case GLUT_KEY_RIGHT:
         player_robot.dir = DIR_RIGHT;
-        if (gamestate == LOBBY && player_robot.x_move < 24.8)
-            player_robot.x_move += 0.1;
-        else if (gamestate == START && player_robot.x_move < 14.8)
-            player_robot.x_move += 0.1;
+        if (gamestate == LOBBY && player_robot.pos.x < 24.8)
+            player_robot.pos.x += 0.1f;
+        else if (gamestate == START && player_robot.pos.x < 14.8)
+            player_robot.pos.x += 0.1f;
         player_robot.y_rotate = 90.0f;
 
         if (!is_move_timer_on)
@@ -263,7 +262,11 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
     switch (key) {
-    case 'r':
+    case 'x': case 'X':
+        player_robot.state = HOLD;
+        break;
+    case 'c': case 'C':
+        player_robot.state = THROW;
         break;
     }
     glutPostRedisplay(); //--- 배경색이 바뀔때마다 출력 콜백함수를 호출하여 화면을 refresh 한다
@@ -271,20 +274,46 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 GLvoid GameUpdateTimer(int value) 
 {
-    if (player_robot.x_move < 14.8)
+    if (player_robot.pos.x < 14.8)
         gamestate = START;
 
     glutPostRedisplay(); // 화면 재 출력
     if (is_update_timer_on)
         glutTimerFunc(100, GameUpdateTimer, 1);
+
+
+    if (player_robot.state == HOLD) {
+        //돌덩이 리스트에서 잡을 수 있는 돌덩이 탐색하기
+        for (int i = 0; i < stoneList.size(); ++i) {
+            if (player_robot.pos.x > stoneList[i].pos.x - 0.5
+                && player_robot.pos.x < stoneList[i].pos.x + 0.5
+                && player_robot.pos.z > stoneList[i].pos.z - 0.5
+                && player_robot.pos.z < stoneList[i].pos.z + 0.5) {
+                player_robot.retained_stone_index = i;
+                break;
+            }
+        }
+    }
+
+	if (player_robot.retained_stone_index == -1)
+    {
+        player_robot.state = IDLE;
+    }
+    else {
+        stoneList[player_robot.retained_stone_index].pos.x = player_robot.pos.x;
+        stoneList[player_robot.retained_stone_index].pos.y = 1.0f;
+        stoneList[player_robot.retained_stone_index].pos.z = player_robot.pos.z;
+    }
+
+    if(player_robot.state == THROW)
 }
 
 GLvoid GameStartCheckTimer(int value)
 {
     if (gamestate == START) {
 		cam.Set_CameraPos(glm::vec3(0.0, 22.0, 19.0));
-		player_robot.x_move = 8.0;
-		player_robot.z_move = 8.0;
+		player_robot.pos.x = 8.0;
+		player_robot.pos.z = 8.0;
 
         is_ai_move_timer_on = true;
         glutTimerFunc(100, AiMoveTimer, 1);
@@ -295,6 +324,8 @@ GLvoid GameStartCheckTimer(int value)
         is_missile_create_timer_on = true;
 		glutTimerFunc(3000, MissileCreateTimer, 1);
 		//glutTimerFunc(100, comMoveTimer, 1);
+
+        //한 번만 실행하고 끄기
 		is_start_check_timer_on = false;
     }
 
@@ -335,44 +366,44 @@ GLvoid AiMoveTimer(int value)
     for (auto& bot : ai_robots)
     {
 		if (bot.dir == DIR_FRONT) {
-            if (bot.z_move < -14.8)
+            if (bot.pos.z < -14.8)
             {
                 bot.dir = DIR_BACK;
                 break;
             }
 
             bot.y_rotate = 180.0f;
-			bot.z_move -= 0.1;
+			bot.pos.z -= 0.1f;
 		}
 		else if (bot.dir == DIR_BACK) {
-            if (bot.z_move > 14.8)
+            if (bot.pos.z > 14.8)
             {
                 bot.dir = DIR_FRONT;
                 break;
             }
 
             bot.y_rotate = 0.0f;
-            bot.z_move += 0.1;
+            bot.pos.z += 0.1f;
 		}
 		else if (bot.dir == DIR_LEFT) {
-            if (bot.x_move < -14.8)
+            if (bot.pos.x < -14.8)
             {
                 bot.dir = DIR_RIGHT;
                 break;
             }
 
             bot.y_rotate = -90.0f;
-            bot.x_move -= 0.1;
+            bot.pos.x -= 0.1f;
 		}
 		else if (bot.dir == DIR_RIGHT) {
-            if (bot.x_move > 14.8)
+            if (bot.pos.x > 14.8)
             {
                 bot.dir = DIR_LEFT;
                 break;
             }
 
             bot.y_rotate = 90.0f;
-            bot.x_move += 0.1;
+            bot.pos.x += 0.1f;
 		}
     }
 

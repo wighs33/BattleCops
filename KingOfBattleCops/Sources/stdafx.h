@@ -36,7 +36,9 @@ enum Robot_State {
 	JUMP_UP,
 	JUMP_DOWN,
 	IDLE,
-	WALK
+	WALK,
+	HOLD,
+	THROW
 };
 
 enum Robot_Direction {
