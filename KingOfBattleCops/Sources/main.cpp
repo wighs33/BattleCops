@@ -7,6 +7,7 @@
 #include "Sphere.h"
 #include "Cube.h"
 #include "Robot.h"
+#include "Missile.h"
 
 GLfloat mx = 0.0f;
 GLfloat my = 0.0f;
@@ -59,7 +60,7 @@ Robot player_robot(20.0f, 0.0f);
 
 vector<Robot> ai_robots;
 vector<Stone> stoneList;
-//vector<Missile> missileList;
+vector<Missile> missileList;
 
 class Texture {
 public:
@@ -124,7 +125,6 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
     light.Set_LightAmbient_Loc(shader_manager.Get_LightAmbient_Loc());
     light.Set_LightPos_Loc(shader_manager.Get_LightPos_Loc());
     light.Set_LightColor_Loc(shader_manager.Get_LightColor_Loc());
-    light.Set_ObjColor_Loc(shader_manager.Get_ObjColor_Loc());
     light.Init();
 
     cam.Set_View_Loc(shader_manager.Get_View_Loc());
@@ -163,8 +163,15 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 
     tex.Coat(shader_manager.Get_ObjColor_Loc(), STONE);
     if (stoneList.size() > 0)
-        for (Stone stone : stoneList)
+        for (auto stone : stoneList)
             stone.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    if (missileList.size() > 0)
+        for (auto missile : missileList)
+        {
+            missile.Set_Colors(glm::vec3(1.0, 0.0, 0.0), shader_manager.Get_ObjColor_Loc());
+            missile.Init_And_Render(shader_manager.Get_Model_Loc());
+        }
 
 
     isAllStop = false;
@@ -281,11 +288,12 @@ GLvoid GameStartCheckTimer(int value)
 
         is_ai_move_timer_on = true;
         glutTimerFunc(100, AiMoveTimer, 1);
-        is_stone_create_timer_on = true;
-		glutTimerFunc(1000, StoneCreateTimer, 1);
         is_random_dir_timer_on = true;
         glutTimerFunc(3000, RandomDirTimer, 1);
-		//glutTimerFunc(1000, missileCreateTimer, 1);
+        is_stone_create_timer_on = true;
+		glutTimerFunc(1000, StoneCreateTimer, 1);
+        is_missile_create_timer_on = true;
+		glutTimerFunc(3000, MissileCreateTimer, 1);
 		//glutTimerFunc(100, comMoveTimer, 1);
 		is_start_check_timer_on = false;
     }
@@ -396,17 +404,18 @@ GLvoid StoneCreateTimer(int value)
         glutTimerFunc(2000, StoneCreateTimer, 1);
 }
 
-//GLvoid MissileCreateTimer(int value)
-//{
-//    Missile missile(posDist(eng), posDist(eng));
-//    missile.Init_VAO(shader_program_ID);
-//
-//    stoneList.push_back(missile);
-//
-//    glutPostRedisplay(); // 화면 재 출력
-//    if (is_missile_create_timer_on)
-//        glutTimerFunc(2000, StoneCreateTimer, 1);
-//}
+GLvoid MissileCreateTimer(int value)
+{
+    Missile missile(posDist(eng), posDist(eng));
+    missile.is_textured = false;
+    missile.Init_VAO(shader_program_ID);
+
+    missileList.push_back(missile);
+
+    glutPostRedisplay(); // 화면 재 출력
+    if (is_missile_create_timer_on)
+        glutTimerFunc(8000, MissileCreateTimer, 1);
+}
 
 GLvoid Mouse(int button, int state, int x, int y)
 {

@@ -10,7 +10,4 @@ void Light::Init() {
 
     glm::vec3 lightColor = light_color;
     glUniform3fv(lightColor_loc, 1, (float*)&lightColor);
-
-    glm::vec3 objColor = object_color;
-    glUniform3fv(objColor_loc, 1, (float*)&objColor);
 }

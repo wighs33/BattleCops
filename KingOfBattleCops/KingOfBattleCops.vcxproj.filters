@@ -42,6 +42,9 @@
     <ClCompile Include="Sources\Robot.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Missile.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\vertex.glsl" />
@@ -78,6 +81,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Robot.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Missile.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

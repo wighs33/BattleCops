@@ -17,7 +17,7 @@
 
 using namespace std;
 
-static float WIN_W = 800.0f, WIN_H = 600.0f;
+static float WIN_W = 1200.0f, WIN_H = 800.0f;
 const int WIN_X = 10, WIN_Y = 10;
 
 const glm::vec3 background_color = glm::vec3(0.0f, 0.0f, 0.0f);

@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\Missile.cpp" />
     <ClCompile Include="Sources\Camera.cpp" />
     <ClCompile Include="Sources\Cube.cpp" />
     <ClCompile Include="Sources\Light.cpp" />
@@ -184,6 +185,7 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\Missile.h" />
     <ClInclude Include="Sources\Camera.h" />
     <ClInclude Include="Sources\Cube.h" />
     <ClInclude Include="Sources\Light.h" />
