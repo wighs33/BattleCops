@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <queue>
 
 using namespace std;
 
@@ -38,10 +39,11 @@ enum Robot_State {
 	IDLE,
 	WALK,
 	HOLD,
-	THROW
+	THROW,
+	DIE
 };
 
-enum Robot_Direction {
+enum Direction {
 	DIR_FRONT, 
 	DIR_BACK, 
 	DIR_LEFT, 
@@ -61,4 +63,4 @@ enum Texture_Image {
 static random_device seeder;
 static mt19937 eng(seeder());
 static uniform_int_distribution<int> dirDist(DIR_FRONT, DIR_RIGHT);
-static uniform_real_distribution<double> posDist(-14.0, 14.0);
+static uniform_real_distribution<double> posDist(5.0, 8.0);

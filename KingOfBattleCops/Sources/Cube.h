@@ -81,4 +81,7 @@ public:
     glm::vec3 scale = glm::vec3(0.5f, 0.5f, 0.5f);
 
     virtual void Init_And_Render(int model);
+
+    int throw_dir = DIR_STOP;
+    int throw_time = 0;
 };
