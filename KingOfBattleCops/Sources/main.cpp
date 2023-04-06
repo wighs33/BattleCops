@@ -62,6 +62,7 @@ vector<Robot> ai_robots;
 vector<Stone> stoneList;
 vector<Missile> missileList;
 deque<int> indice_of_throwed_stones;
+deque<int> indice_of_stone_throwed_by_ai;
 
 class Texture {
 public:
@@ -189,6 +190,11 @@ GLvoid Reshape(int w, int h) //--- 콜백 함수: 다시 그리기 콜백 함수
 }
 
 GLvoid SpecialKeyPress(int key, int x, int y) {
+    if (player_robot.state == DIE) {
+        glutPostRedisplay();
+        return;
+    }
+
     switch (key) {
     case GLUT_KEY_UP:
         player_robot.dir = DIR_FRONT;
@@ -263,6 +269,11 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
+    if (player_robot.state == DIE) {
+        glutPostRedisplay();
+        return;
+    }
+
     switch (key) {
     case 'x': case 'X':
         player_robot.state = HOLD;
@@ -307,7 +318,7 @@ GLvoid GameUpdateTimer(int value)
         player_robot.state = IDLE;
         //플레이어가 보유한 돌의 인덱스를 컨테이너에 저장하기
         indice_of_throwed_stones.push_back(player_robot.retained_stone_index);
-        stoneList[indice_of_throwed_stones.front()].throw_dir = player_robot.dir;
+        stoneList[player_robot.retained_stone_index].throw_dir = player_robot.dir;
         player_robot.retained_stone_index = -1;
     }
 
@@ -342,7 +353,15 @@ GLvoid GameUpdateTimer(int value)
                 && player_robot.pos.z > bot.pos.z - 5.0
                 && player_robot.pos.z < bot.pos.z + 5.0)
             {
-                bot.state = THROW;
+                bot.state = IDLE;
+
+                indice_of_stone_throwed_by_ai.push_back(bot.retained_stone_index);
+
+                float x = player_robot.pos.x - stoneList[bot.retained_stone_index].pos.x;
+                float z = player_robot.pos.z - stoneList[bot.retained_stone_index].pos.z;
+
+				stoneList[bot.retained_stone_index].throw_rate = glm::vec2(x / 5 / sqrt(x*x + z*z), z / 5 / sqrt(x * x + z * z));
+                bot.retained_stone_index = -1;
             }
         }
     }
@@ -546,11 +565,11 @@ GLvoid MissileCreateTimer(int value)
 
 GLvoid StoneThrowTimer(int value)
 {
-    if (indice_of_throwed_stones.size() == 0) {
-        if (is_stone_throw_timer_on)
-            glutTimerFunc(10, StoneThrowTimer, 1);
-        return;
-    }
+    //if (indice_of_throwed_stones.size() == 0) {
+    //    if (is_stone_throw_timer_on)
+    //        glutTimerFunc(10, StoneThrowTimer, 1);
+    //    return;
+    //}
 
     for (auto i : indice_of_throwed_stones)
     {
@@ -561,6 +580,7 @@ GLvoid StoneThrowTimer(int value)
         if (temp_stone.pos.y < 0.0f)
         {
             temp_stone.throw_time = 0;
+            temp_stone.throw_dir = DIR_STOP;
             indice_of_throwed_stones.pop_front();
         }
 
@@ -590,6 +610,30 @@ GLvoid StoneThrowTimer(int value)
                 bot.state = DIE;
                 break;
             }
+        }
+    }
+
+    for (auto i : indice_of_stone_throwed_by_ai)
+    {
+        auto& temp_stone = stoneList[i];
+
+        temp_stone.pos.y += 0.1f - 0.01f * ++temp_stone.throw_time;
+
+        if (temp_stone.pos.y < 0.0f)
+        {
+            temp_stone.throw_time = 0;
+			temp_stone.throw_rate = glm::vec2(0.0f, 0.0f);
+            indice_of_stone_throwed_by_ai.pop_front();
+        }
+
+        temp_stone.pos.x += temp_stone.throw_rate.x;
+        temp_stone.pos.z += temp_stone.throw_rate.y;
+
+        if (player_robot.pos.x > temp_stone.pos.x - 0.5
+            && player_robot.pos.x < temp_stone.pos.x + 0.5
+            && player_robot.pos.z > temp_stone.pos.z - 0.5
+            && player_robot.pos.z < temp_stone.pos.z + 0.5) {
+            player_robot.state = DIE;
         }
     }
 

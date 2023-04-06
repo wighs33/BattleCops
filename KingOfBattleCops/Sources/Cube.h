@@ -86,4 +86,5 @@ public:
     int throw_time = 0;
 
     bool is_retained = false;
+    glm::vec2 throw_rate;
 };
