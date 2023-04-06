@@ -428,6 +428,7 @@ GLvoid AiMoveTimer(int value)
 GLvoid RandomDirTimer(int value)
 {
     for (auto& bot : ai_robots) {
+        if (bot.state == DIE) continue;
         bot.dir = dirDist(eng);
     }
 
