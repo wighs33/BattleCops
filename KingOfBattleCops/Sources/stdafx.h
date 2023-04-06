@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
-#include <queue>
+#include <deque>
 
 using namespace std;
 
@@ -40,7 +40,8 @@ enum Robot_State {
 	WALK,
 	HOLD,
 	THROW,
-	DIE
+	DIE,
+	MOVE_TO_STONE
 };
 
 enum Direction {

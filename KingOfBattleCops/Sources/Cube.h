@@ -84,4 +84,6 @@ public:
 
     int throw_dir = DIR_STOP;
     int throw_time = 0;
+
+    bool is_retained = false;
 };

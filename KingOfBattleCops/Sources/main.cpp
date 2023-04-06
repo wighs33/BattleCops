@@ -61,7 +61,7 @@ Robot player_robot(20.0f, 0.0f);
 vector<Robot> ai_robots;
 vector<Stone> stoneList;
 vector<Missile> missileList;
-queue<int> indice_of_throwed_stones;
+deque<int> indice_of_throwed_stones;
 
 class Texture {
 public:
@@ -305,10 +305,46 @@ GLvoid GameUpdateTimer(int value)
 
     if (player_robot.state == THROW) {
         player_robot.state = IDLE;
-        //플레이어가 보유한 돌의 인덱스 큐에 저장하기
-        indice_of_throwed_stones.push(player_robot.retained_stone_index);
+        //플레이어가 보유한 돌의 인덱스를 컨테이너에 저장하기
+        indice_of_throwed_stones.push_back(player_robot.retained_stone_index);
         stoneList[indice_of_throwed_stones.front()].throw_dir = player_robot.dir;
         player_robot.retained_stone_index = -1;
+    }
+
+    for (auto& bot : ai_robots)
+    {
+        for (size_t i = 0; i < stoneList.size(); ++i)
+        {
+            if (i == player_robot.retained_stone_index) continue;
+            if (stoneList[i].is_retained) continue;
+
+            if (bot.state == IDLE
+                && bot.pos.x > stoneList[i].pos.x - 8.0
+                && bot.pos.x < stoneList[i].pos.x + 8.0
+                && bot.pos.z > stoneList[i].pos.z - 8.0
+                && bot.pos.z < stoneList[i].pos.z + 8.0) {
+                bot.state = MOVE_TO_STONE;
+                bot.index_of_stone_to_get = i;
+                break;
+            }
+        }
+    }
+
+    for(auto& bot : ai_robots) {
+        if (bot.state == HOLD)
+        {
+            stoneList[bot.retained_stone_index].pos.x = bot.pos.x;
+            stoneList[bot.retained_stone_index].pos.y = 1.0f;
+            stoneList[bot.retained_stone_index].pos.z = bot.pos.z;
+
+            if (player_robot.pos.x > bot.pos.x - 5.0
+                && player_robot.pos.x < bot.pos.x + 5.0
+                && player_robot.pos.z > bot.pos.z - 5.0
+                && player_robot.pos.z < bot.pos.z + 5.0)
+            {
+                bot.state = THROW;
+            }
+        }
     }
 
     glutPostRedisplay(); // 화면 재 출력
@@ -332,7 +368,7 @@ GLvoid GameStartCheckTimer(int value)
         is_missile_create_timer_on = true;
 		glutTimerFunc(3000, MissileCreateTimer, 1);
         is_stone_throw_timer_on = true;
-        glutTimerFunc(100, StoneThrowTimer, 1);
+        glutTimerFunc(10, StoneThrowTimer, 1);
 
         //한 번만 실행하고 끄기
 		is_start_check_timer_on = false;
@@ -376,7 +412,7 @@ GLvoid AiMoveTimer(int value)
 
     for (auto& bot : ai_robots)
     {
-        if (bot.state == DIE) continue;
+        if (bot.state != IDLE && bot.state != HOLD) continue;
 
 		if (bot.dir == DIR_FRONT) {
             if (bot.pos.z < -14.8)
@@ -420,6 +456,52 @@ GLvoid AiMoveTimer(int value)
 		}
     }
 
+    for (auto& bot : ai_robots)
+    {
+        if (bot.state != MOVE_TO_STONE) continue;
+        if (stoneList[bot.index_of_stone_to_get].is_retained) {
+            bot.state = IDLE;
+            bot.is_finish_to_move_x = false;
+            bot.index_of_stone_to_get = -1;
+            continue;
+        }
+
+        if (bot.pos.x > stoneList[bot.index_of_stone_to_get].pos.x - 0.5
+            && bot.pos.x < stoneList[bot.index_of_stone_to_get].pos.x + 0.5) {
+            bot.is_finish_to_move_x = true;
+        }
+        else {
+            if (bot.pos.x < stoneList[bot.index_of_stone_to_get].pos.x)
+            {
+                bot.y_rotate = 90.0f;
+                bot.pos.x += 0.1f;
+            }
+            else {
+                bot.y_rotate = -90.0f;
+                bot.pos.x -= 0.1f;
+            }
+        }
+
+        if (bot.pos.z > stoneList[bot.index_of_stone_to_get].pos.z - 0.5
+            && bot.pos.z < stoneList[bot.index_of_stone_to_get].pos.z + 0.5) {
+            bot.state = HOLD;
+            stoneList[bot.index_of_stone_to_get].is_retained = true;
+            bot.is_finish_to_move_x = false;
+            bot.retained_stone_index = bot.index_of_stone_to_get;
+            bot.index_of_stone_to_get = -1;
+        }
+        else if(bot.is_finish_to_move_x){
+            if (bot.pos.z < stoneList[bot.index_of_stone_to_get].pos.z) {
+                bot.y_rotate = 0.0f;
+                bot.pos.z += 0.1f;
+            }
+            else {
+                bot.y_rotate = 180.0f;
+                bot.pos.z -= 0.1f;
+            }
+        }
+    }
+
     glutPostRedisplay(); // 화면 재 출력
     if (is_ai_move_timer_on)
         glutTimerFunc(100, AiMoveTimer, 1);
@@ -428,7 +510,7 @@ GLvoid AiMoveTimer(int value)
 GLvoid RandomDirTimer(int value)
 {
     for (auto& bot : ai_robots) {
-        if (bot.state == DIE) continue;
+        if (bot.state != IDLE && bot.state != HOLD) continue;
         bot.dir = dirDist(eng);
     }
 
@@ -466,45 +548,48 @@ GLvoid StoneThrowTimer(int value)
 {
     if (indice_of_throwed_stones.size() == 0) {
         if (is_stone_throw_timer_on)
-            glutTimerFunc(100, StoneThrowTimer, 1);
+            glutTimerFunc(10, StoneThrowTimer, 1);
         return;
     }
 
-    auto& temp_stone = stoneList[indice_of_throwed_stones.front()];
+    for (auto i : indice_of_throwed_stones)
+    {
+        auto& temp_stone = stoneList[i];
 
-    temp_stone.pos.y += 0.1f - 0.01f * ++temp_stone.throw_time;
+        temp_stone.pos.y += 0.1f - 0.01f * ++temp_stone.throw_time;
 
-    if (temp_stone.pos.y < 0.0f)
-    {
-        temp_stone.throw_time = 0;
-        indice_of_throwed_stones.pop();
-    }
+        if (temp_stone.pos.y < 0.0f)
+        {
+            temp_stone.throw_time = 0;
+            indice_of_throwed_stones.pop_front();
+        }
 
-    if (temp_stone.throw_dir == DIR_FRONT)
-    {
-        temp_stone.pos.z -= 0.2f;
-    }
-    else if (temp_stone.throw_dir == DIR_BACK)
-    {
-        temp_stone.pos.z += 0.2f;
-    }
-    else if (temp_stone.throw_dir == DIR_LEFT)
-    {
-        temp_stone.pos.x -= 0.2f;
-    }
-    else if (temp_stone.throw_dir == DIR_RIGHT)
-    {
-        temp_stone.pos.x += 0.2f;
-    }
+        if (temp_stone.throw_dir == DIR_FRONT)
+        {
+            temp_stone.pos.z -= 0.2f;
+        }
+        else if (temp_stone.throw_dir == DIR_BACK)
+        {
+            temp_stone.pos.z += 0.2f;
+        }
+        else if (temp_stone.throw_dir == DIR_LEFT)
+        {
+            temp_stone.pos.x -= 0.2f;
+        }
+        else if (temp_stone.throw_dir == DIR_RIGHT)
+        {
+            temp_stone.pos.x += 0.2f;
+        }
 
-    for (auto& bot : ai_robots)
-    {
-        if (bot.pos.x > temp_stone.pos.x - 0.5
-            && bot.pos.x < temp_stone.pos.x + 0.5
-            && bot.pos.z > temp_stone.pos.z - 0.5
-            && bot.pos.z < temp_stone.pos.z + 0.5) {
-            bot.state = DIE;
-            break;
+        for (auto& bot : ai_robots)
+        {
+            if (bot.pos.x > temp_stone.pos.x - 0.5
+                && bot.pos.x < temp_stone.pos.x + 0.5
+                && bot.pos.z > temp_stone.pos.z - 0.5
+                && bot.pos.z < temp_stone.pos.z + 0.5) {
+                bot.state = DIE;
+                break;
+            }
         }
     }
 

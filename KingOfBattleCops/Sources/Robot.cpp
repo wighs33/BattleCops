@@ -17,6 +17,9 @@ void Robot::Init_And_Render_Left_Leg(int model) {
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, -0.1, 0.0));
 	m_transform = glm::rotate(m_transform, glm::radians(x_rotate), glm::vec3(1.0, 0.0, 0.0));
@@ -32,6 +35,9 @@ void Robot::Init_And_Render_Right_Leg(int model) {
 	m_transform = glm::translate(m_transform, pos);
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, -0.1, 0.0));
@@ -49,6 +55,9 @@ void Robot::Init_And_Render_Torso(int model) {
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.2, 0.0));
 	m_transform = glm::scale(m_transform, glm::vec3(0.4, 0.6, 0.4));
@@ -62,6 +71,9 @@ void Robot::Init_And_Render_Left_Arm(int model) {
 	m_transform = glm::translate(m_transform, pos);
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.35, 0.0));
@@ -79,6 +91,9 @@ void Robot::Init_And_Render_Right_Arm(int model) {
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.35, 0.0));
 	m_transform = glm::rotate(m_transform, glm::radians(x_rotate), glm::vec3(1.0, 0.0, 0.0));
@@ -95,6 +110,9 @@ void Robot::Init_And_Render_Head(int model) {
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
 	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.6, 0.0));
 	m_transform = glm::scale(m_transform, glm::vec3(0.2, 0.2, 0.2));
@@ -108,6 +126,9 @@ void Robot::Init_And_Render_Nose(int model) {
 	m_transform = glm::translate(m_transform, pos);
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {
 		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
+	}
+	if (state == DIE && (dir == DIR_LEFT || dir == DIR_RIGHT)) {
+		m_transform = glm::rotate(m_transform, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	}
 	m_transform = glm::rotate(m_transform, glm::radians(y_rotate), glm::vec3(0.0, 1.0, 0.0));
 	m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.6, 0.1));
