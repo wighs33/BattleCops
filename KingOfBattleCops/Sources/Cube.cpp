@@ -14,8 +14,8 @@ void Cube::Init_And_Render(int model) {
 
 void Sky::Init_And_Render(int model) {
     glm::mat4 m_transform = glm::mat4(1.0f);
-    m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.0, -50.0));
-    m_transform = glm::scale(m_transform, glm::vec3(50.0, 50.0, 50.0));
+    //m_transform = glm::translate(m_transform, glm::vec3(0.0, 0.0, -50.0));
+    m_transform = glm::scale(m_transform, glm::vec3(51.0, 51.0, 51.0));
 
     glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(m_transform));
 
@@ -27,7 +27,7 @@ void Field::Init_And_Render(int model)
 {
     glm::mat4 m_transform = glm::mat4(1.0f);
     m_transform = glm::translate(m_transform, glm::vec3(0.0, -1.0f / 2, 0.0));
-    m_transform = glm::scale(m_transform, glm::vec3(30.0f, 30.0f, 30.0f));
+    m_transform = glm::scale(m_transform, glm::vec3(scale_size, scale_size, scale_size));
     m_transform = glm::translate(m_transform, glm::vec3(0.0, -1.0f / 2, 0.0));
 
     glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(m_transform));

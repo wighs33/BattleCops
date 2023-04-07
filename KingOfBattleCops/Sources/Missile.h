@@ -13,5 +13,10 @@ public:
 	glm::vec3 pos = glm::vec3(0.0f, -0.5f, 0.0f);
 
     static const int NUMOF_VERTICES = 1704;
+
+	float y_rotate = 0.0f;
+
+	int throw_dir = DIR_STOP;
+	int throw_time = 0;
 };
 

@@ -12,6 +12,8 @@ void Robot::Init_And_Render(int model) {
 }
 
 void Robot::Init_And_Render_Left_Leg(int model) {
+	//누적되어도 변환은 거꾸로 계산된다!
+
 	glm::mat4 m_transform = glm::mat4(1.0f);
 	m_transform = glm::translate(m_transform, pos);
 	if (state == DIE && (dir == DIR_FRONT || dir == DIR_BACK)) {

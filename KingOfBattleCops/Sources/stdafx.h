@@ -64,4 +64,5 @@ enum Texture_Image {
 static random_device seeder;
 static mt19937 eng(seeder());
 static uniform_int_distribution<int> dirDist(DIR_FRONT, DIR_RIGHT);
-static uniform_real_distribution<double> posDist(5.0, 8.0);
+static uniform_real_distribution<double> posDist(-14.8, 14.8);
+static uniform_real_distribution<float> missileDir(-180.0f, 180.0f);

@@ -21,19 +21,19 @@ public:
 class Sky : public Cube
 {
 public:
-    Sky() : Cube(CUBE_FRONT){}
+    Sky() : Cube(CUBE_WHOLE){}
 
     virtual void Init_And_Render(int model);
-
-    static const int NUMOF_VERTICES = 6;
 };
 
 class Field : public Cube
 {
 public:
-    Field() : Cube(CUBE_FLOOR) {}
+    Field(float scale) : Cube(CUBE_FLOOR) { scale_size = scale; }
 
     virtual void Init_And_Render(int model);
+
+    float scale_size = 30.0f;
 
     static const int NUMOF_VERTICES = 6;
 };

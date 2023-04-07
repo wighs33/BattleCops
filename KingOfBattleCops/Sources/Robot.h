@@ -38,6 +38,7 @@ public:
 	int state = IDLE;
 
 	int retained_stone_index = -1;
+	int retained_missile_index = -1;
 	int index_of_stone_to_get = -1;
 
 	bool is_finish_to_move_x = false;;

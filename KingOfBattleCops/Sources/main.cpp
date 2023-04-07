@@ -22,6 +22,7 @@ bool is_random_dir_timer_on = false;
 bool is_stone_create_timer_on = false;
 bool is_missile_create_timer_on = false;
 bool is_stone_throw_timer_on = false;
+bool is_missile_throw_timer_on = false;
 
 bool isAllStop = false;
 
@@ -44,14 +45,15 @@ GLvoid RandomDirTimer(int value);
 GLvoid StoneCreateTimer(int value);
 GLvoid MissileCreateTimer(int value);
 GLvoid StoneThrowTimer(int value);
-//GLvoid comStoneThrowTimer(int value);
+GLvoid MissileThrowTimer(int value);
 
 ShaderManager shader_manager;
 Camera cam;
 Light light;
 Sphere sphere;
 Sky sky;
-Field field;
+Field field(30.0f);
+Field field2(50.0f);
 Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
@@ -62,6 +64,7 @@ vector<Robot> ai_robots;
 vector<Stone> stoneList;
 vector<Missile> missileList;
 deque<int> indice_of_throwed_stones;
+deque<int> indice_of_throwed_missiles;
 deque<int> indice_of_stone_throwed_by_ai;
 
 class Texture {
@@ -303,23 +306,49 @@ GLvoid GameUpdateTimer(int value)
             }
         }
 
-        if (player_robot.retained_stone_index == -1)
+        for (size_t i = 0; i < missileList.size(); ++i) {
+            if (player_robot.retained_stone_index == -1
+                &&player_robot.pos.x > missileList[i].pos.x - 0.5
+                && player_robot.pos.x < missileList[i].pos.x + 0.5
+                && player_robot.pos.z > missileList[i].pos.z - 0.5
+                && player_robot.pos.z < missileList[i].pos.z + 0.5) {
+                player_robot.retained_missile_index = i;
+                break;
+            }
+        }
+
+        if (player_robot.retained_stone_index == -1 && player_robot.retained_missile_index == -1)
         {
             player_robot.state = IDLE;
         }
-        else {
+        else if(player_robot.retained_stone_index != -1){
             stoneList[player_robot.retained_stone_index].pos.x = player_robot.pos.x;
             stoneList[player_robot.retained_stone_index].pos.y = 1.0f;
             stoneList[player_robot.retained_stone_index].pos.z = player_robot.pos.z;
+        }
+        else if (player_robot.retained_missile_index != -1) {
+                missileList[player_robot.retained_missile_index].pos.x = player_robot.pos.x;
+                missileList[player_robot.retained_missile_index].pos.y = 1.0f;
+                missileList[player_robot.retained_missile_index].pos.z = player_robot.pos.z;
+                missileList[player_robot.retained_missile_index].y_rotate = player_robot.y_rotate;
         }
     }
 
     if (player_robot.state == THROW) {
         player_robot.state = IDLE;
         //플레이어가 보유한 돌의 인덱스를 컨테이너에 저장하기
-        indice_of_throwed_stones.push_back(player_robot.retained_stone_index);
-        stoneList[player_robot.retained_stone_index].throw_dir = player_robot.dir;
-        player_robot.retained_stone_index = -1;
+        if (player_robot.retained_stone_index != -1)
+        {
+            indice_of_throwed_stones.push_back(player_robot.retained_stone_index);
+            stoneList[player_robot.retained_stone_index].throw_dir = player_robot.dir;
+            player_robot.retained_stone_index = -1;
+        }
+        else if (player_robot.retained_missile_index != -1)
+        {
+            indice_of_throwed_missiles.push_back(player_robot.retained_missile_index);
+            missileList[player_robot.retained_missile_index].throw_dir = player_robot.dir;
+            player_robot.retained_missile_index = -1;
+        }
     }
 
     for (auto& bot : ai_robots)
@@ -348,10 +377,10 @@ GLvoid GameUpdateTimer(int value)
             stoneList[bot.retained_stone_index].pos.y = 1.0f;
             stoneList[bot.retained_stone_index].pos.z = bot.pos.z;
 
-            if (player_robot.pos.x > bot.pos.x - 5.0
-                && player_robot.pos.x < bot.pos.x + 5.0
-                && player_robot.pos.z > bot.pos.z - 5.0
-                && player_robot.pos.z < bot.pos.z + 5.0)
+            if (player_robot.pos.x > bot.pos.x - 6.0
+                && player_robot.pos.x < bot.pos.x + 6.0
+                && player_robot.pos.z > bot.pos.z - 6.0
+                && player_robot.pos.z < bot.pos.z + 6.0)
             {
                 bot.state = IDLE;
 
@@ -388,6 +417,8 @@ GLvoid GameStartCheckTimer(int value)
 		glutTimerFunc(3000, MissileCreateTimer, 1);
         is_stone_throw_timer_on = true;
         glutTimerFunc(10, StoneThrowTimer, 1);
+        is_missile_throw_timer_on = true;
+        glutTimerFunc(3, MissileThrowTimer, 1);
 
         //한 번만 실행하고 끄기
 		is_start_check_timer_on = false;
@@ -540,10 +571,13 @@ GLvoid RandomDirTimer(int value)
 
 GLvoid StoneCreateTimer(int value)
 {
-    Stone stone(posDist(eng), posDist(eng));
-    stone.Init_VAO(shader_program_ID);
+    if (stoneList.size() < 30)
+    {
+        Stone stone(posDist(eng), posDist(eng));
+        stone.Init_VAO(shader_program_ID);
 
-    stoneList.push_back(stone);
+        stoneList.push_back(stone);
+    }
 
     glutPostRedisplay(); // 화면 재 출력
     if (is_stone_create_timer_on)
@@ -552,11 +586,16 @@ GLvoid StoneCreateTimer(int value)
 
 GLvoid MissileCreateTimer(int value)
 {
-    Missile missile(posDist(eng), posDist(eng));
-    missile.is_textured = false;
-    missile.Init_VAO(shader_program_ID);
+    if (missileList.size() < 15)
+    {
+        Missile missile(posDist(eng), posDist(eng));
 
-    missileList.push_back(missile);
+        missile.y_rotate = missileDir(eng);
+        missile.is_textured = false;
+        missile.Init_VAO(shader_program_ID);
+
+        missileList.push_back(missile);
+    }
 
     glutPostRedisplay(); // 화면 재 출력
     if (is_missile_create_timer_on)
@@ -565,12 +604,6 @@ GLvoid MissileCreateTimer(int value)
 
 GLvoid StoneThrowTimer(int value)
 {
-    //if (indice_of_throwed_stones.size() == 0) {
-    //    if (is_stone_throw_timer_on)
-    //        glutTimerFunc(10, StoneThrowTimer, 1);
-    //    return;
-    //}
-
     for (auto i : indice_of_throwed_stones)
     {
         auto& temp_stone = stoneList[i];
@@ -642,6 +675,55 @@ GLvoid StoneThrowTimer(int value)
         glutTimerFunc(10, StoneThrowTimer, 1);
 }
 
+GLvoid MissileThrowTimer(int value)
+{
+    for (auto i : indice_of_throwed_missiles)
+    {
+        auto& temp_missile = missileList[i];
+
+        temp_missile.pos.y += 0.03f - 0.001f * ++temp_missile.throw_time;
+
+        if (temp_missile.pos.y < 0.0f)
+        {
+            temp_missile.throw_time = 0;
+            temp_missile.throw_dir = DIR_STOP;
+            indice_of_throwed_missiles.pop_front();
+        }
+
+        if (temp_missile.throw_dir == DIR_FRONT)
+        {
+            temp_missile.pos.z -= 0.2f;
+        }
+        else if (temp_missile.throw_dir == DIR_BACK)
+        {
+            temp_missile.pos.z += 0.2f;
+        }
+        else if (temp_missile.throw_dir == DIR_LEFT)
+        {
+            temp_missile.pos.x -= 0.2f;
+        }
+        else if (temp_missile.throw_dir == DIR_RIGHT)
+        {
+            temp_missile.pos.x += 0.2f;
+        }
+
+        for (auto& bot : ai_robots)
+        {
+            if (bot.pos.x > temp_missile.pos.x - 0.5
+                && bot.pos.x < temp_missile.pos.x + 0.5
+                && bot.pos.z > temp_missile.pos.z - 0.5
+                && bot.pos.z < temp_missile.pos.z + 0.5) {
+                bot.state = DIE;
+                break;
+            }
+        }
+    }
+
+    glutPostRedisplay(); // 화면 재 출력
+    if (is_missile_throw_timer_on)
+        glutTimerFunc(3, MissileThrowTimer, 1);
+}
+
 GLvoid Mouse(int button, int state, int x, int y)
 {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
@@ -680,6 +762,7 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     test &= sphere.Init_VAO(shader_program_ID);
     test &= sky.Init_VAO(shader_program_ID);
     test &= field.Init_VAO(shader_program_ID);
+    test &= field2.Init_VAO(shader_program_ID);
     test &= lobby.Init_VAO(shader_program_ID);
     test &= lobby_floor.Init_VAO(shader_program_ID);
     test &= door.Init_VAO(shader_program_ID);
