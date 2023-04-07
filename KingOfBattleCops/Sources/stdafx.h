@@ -58,7 +58,8 @@ enum Texture_Image {
 	WALL,
 	WOOD,
 	WOODFLOOR,
-	STONE
+	STONE,
+	SOIL
 };
 
 static random_device seeder;

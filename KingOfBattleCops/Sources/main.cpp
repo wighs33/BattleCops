@@ -52,8 +52,8 @@ Camera cam;
 Light light;
 Sphere sphere;
 Sky sky;
-Field field(30.0f);
-Field field2(50.0f);
+Field field(glm::vec3(30.0f, 0.0f, 30.0f), 0.5f);
+Field field2(glm::vec3(100.0f, 0.0f, 50.0f), 1.0f);
 Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
@@ -76,6 +76,7 @@ public:
         images[3] = stbi_load("Resources/wood.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[4] = stbi_load("Resources/lobbyfloortex.jpg", &tex_w, &tex_h, &numberOfChannel, 3);
         images[5] = stbi_load("Resources/stone.png", &tex_w, &tex_h, &numberOfChannel, 3);
+        images[6] = stbi_load("Resources/soil.png", &tex_w, &tex_h, &numberOfChannel, 3);
     }
 
     ~Texture() {
@@ -105,7 +106,7 @@ public:
 
     int numberOfChannel = 1;
 
-    static const int MAX_IMAGES = 6;
+    static const int MAX_IMAGES = 7;
     unsigned char* images[MAX_IMAGES];
 
     unsigned int texture_id;
@@ -142,6 +143,9 @@ GLvoid drawScene() //--- 콜백 함수: 그리기 콜백 함수
 
     tex.Coat(shader_manager.Get_ObjColor_Loc(), GRASS);
     field.Init_And_Render(shader_manager.Get_Model_Loc());
+
+    tex.Coat(shader_manager.Get_ObjColor_Loc(), SOIL);
+    field2.Init_And_Render(shader_manager.Get_Model_Loc());
 
     tex.Coat(shader_manager.Get_ObjColor_Loc(), WALL);
     lobby.Init_And_Render(shader_manager.Get_Model_Loc());

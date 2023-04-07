@@ -21,19 +21,22 @@ public:
 class Sky : public Cube
 {
 public:
-    Sky() : Cube(CUBE_WHOLE){}
+    Sky() : Cube(CUBE_FRONT){}
 
     virtual void Init_And_Render(int model);
+
+    static const int NUMOF_VERTICES = 6;
 };
 
 class Field : public Cube
 {
 public:
-    Field(float scale) : Cube(CUBE_FLOOR) { scale_size = scale; }
+    Field(glm::vec3 scale, float a) : scale_(scale), alpha(a), Cube(CUBE_FLOOR) {}
 
     virtual void Init_And_Render(int model);
 
-    float scale_size = 30.0f;
+    glm::vec3 scale_ = glm::vec3(0.0f, 0.0f, 0.0f);
+    float alpha = 0.5f;
 
     static const int NUMOF_VERTICES = 6;
 };
