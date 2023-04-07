@@ -53,7 +53,7 @@ Light light;
 Sphere sphere;
 Sky sky;
 Field field(glm::vec3(30.0f, 0.0f, 30.0f), 0.5f);
-Field field2(glm::vec3(100.0f, 0.0f, 50.0f), 1.0f);
+Field field2(glm::vec3(80.0f, 0.0f, 50.0f), 0.6f);
 Lobby lobby;
 Lobby_Floor lobby_floor;
 Door door;
@@ -741,7 +741,7 @@ int main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // 디스플레이 모드 설정
     glutInitWindowPosition(WIN_X, WIN_Y); // 윈도우의 위치 지정
     glutInitWindowSize((int)WIN_W, (int)WIN_H); // 윈도우의 크기 지정
-    glutCreateWindow("Example1"); // 윈도우 생성 (윈도우 이름)
+    glutCreateWindow("Battle Cops"); // 윈도우 생성 (윈도우 이름)
 
     //--- GLEW 초기화하기
     glewExperimental = GL_TRUE;
